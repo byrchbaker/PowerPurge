@@ -1,4 +1,4 @@
-Function Uninstall-App {
+Function Uninstall-Application {
     [CmdletBinding()]
     Param(
         [Alias('Name', 'DisplayName')]
@@ -153,9 +153,35 @@ Function Uninstall-App {
                                     
                                     $UninstallString = $UninstallString -replace '_\?=.*$'
 
-                                    
-                                    Start-Process -FilePath $UninstallString -ArgumentList "/SILENT /quiet /S"
-                                    
+                                        $pattern = '^(.+?\.exe)\s*(.*)$'
+                                        $matches = [regex]::Match($uninstallstring, $pattern)
+                                        if ($matches.Success) {
+                                            $executable = $matches.Groups[1].Value
+                                            $arguments = $matches.Groups[2].Value
+                                            if ($arguments) {
+                                            write 'app with args' + $arguments
+                                                if ([string]$arguments -notmatch '--\w+') {
+                                                    Start-Process -FilePath "$executable" -ArgumentList "$arguments /SILENT /quiet /S"
+                                                } else {
+                                                    write 'using chromium'
+                                                    $pattern = '^(.+?\.exe)\s*(.*)$'
+                                                    $matches = [regex]::Match($uninstallstring, $pattern)
+                                                    if ($matches.Success) {
+                                                        $executable = $matches.Groups[1].Value
+                                                        $arguments = $matches.Groups[2].Value
+                                                        Start-Process -FilePath "$executable" -ArgumentList "$arguments --verbose-logging --force-uninstall"
+                                                    } else {
+                                                        Write-Error "Invalid uninstall string format."
+                                                    }
+                                                }
+                                           } else {
+                                            Start-Process -FilePath $UninstallString -ArgumentList "/SILENT /quiet /S"
+                                            }                                        
+                                        } else {
+                                            Write-Error "Invalid uninstall string format."
+                                        }
+                                        
+                                   
                                     Write-Host -ForegroundColor Green "STATUS: $($FoundApp.DisplayName) uninstalled successfully!"
 
                                     break
