@@ -9,17 +9,17 @@ Function Uninstall-Application {
             ValueFromPipelineByPropertyName = $true
         )]
         [string[]]$AppName,
-        [Parameter(Mandatory = $False)]
+        [Parameter(Mandatory=$False)]
         [switch]$Silent,
         [Parameter(Mandatory = $false)]
         [switch]$CheckDownloads,
-        [Parameter(Mandatory = $False)]
+        [Parameter(Mandatory=$False)]
         [string]$LogLocation
         
     )
 
     Begin {
-        <# Write-Verbose "[BEGIN] Checking if Log directory exists: $LogLocation"
+       <# Write-Verbose "[BEGIN] Checking if Log directory exists: $LogLocation"
 
         switch ($LogLocation) {
             $true {
@@ -49,7 +49,7 @@ Function Uninstall-Application {
             )
 
             $FoundApps = Get-WmiObject -Class Win32_Product -Verbose | 
-            Where-Object { $_.Name -like "*$AppName*" }
+            Where-Object {$_.Name -like "*$AppName*"}
 
             if ($FoundApps) {
 
@@ -68,7 +68,7 @@ Function Uninstall-Application {
                         Write-Host -ForegroundColor Green ("STATUS: " + $FoundApp.Name + " was uninstalled successfully!")
                         
                     }
-                }
+               }
             }
             else {
                 Write-Warning "[INFO] $AppName is not found in WMI objects. Please try a different app name!"
@@ -92,9 +92,9 @@ Function Uninstall-Application {
             Write-Verbose "[INFO] Trying to find '$AppName' in registry."
             
 
-            $FoundApps = Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall", "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "HKCU:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall" -ErrorAction SilentlyContinue | 
+            $FoundApps = Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall","HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "HKCU:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall" -ErrorAction SilentlyContinue | 
             Get-ItemProperty | 
-            Where-Object { $_.DisplayName -like "*$AppName*" }
+            Where-Object {$_.DisplayName -like "*$AppName*"}
 
             if ($FoundApps) {
     
@@ -109,7 +109,7 @@ Function Uninstall-Application {
 
                     foreach ($FoundApp in $FoundApps) {
                         Write-Host -ForegroundColor Green "STATUS: $($FoundApp.DisplayName) was found in registry!"
-                        Write-Host -ForegroundColor Green ("STATUS: Starting Uninstall of " + $($FoundApp.DisplayName))
+                        Write-Host -ForegroundColor Green ("STATUS: Starting uninstall of " + $($FoundApp.DisplayName))
                         
                         Write-Verbose "[INFO] Checking to see if there are any MSI entries."
                         
@@ -117,43 +117,41 @@ Function Uninstall-Application {
                             Write-Host -ForegroundColor Green "STATUS: MSI entry found!"
                         
                             Start-MSIUninstall -AppName $AppName -Verbose
-                        }
-                        else { 
+                        } else { 
                             Write-Verbose "[INFO] There are no MSI entries. Uninstalling through uninstall string!"
 
                             switch ($Silent) {
-                                $true {
+                            $true {
 
-                                    Write-Verbose "[VERIFY] Checking if $($FoundApp.DisplayName) has a silent uninstall string"
+                                Write-Verbose "[VERIFY] Checking if $($FoundApp.DisplayName) has a silent uninstall string"
 
-                                    if ($FoundApp.QuietUninstallString) {
-                                        Write-Host -ForegroundColor Green "STATUS: Uninstalling $($FoundApp.DisplayName) in silent mode."
-                                        $UninstallString = $Foundapp.QuietUninstallString -replace '"', ''
-                                        $UninstallString = $UninstallString -replace '_\?=.*$'
+                                if ($FoundApp.QuietUninstallString) {
+                                    Write-Host -ForegroundColor Green "STATUS: Uninstalling $($FoundApp.DisplayName) in silent mode."
+                                    $UninstallString = $Foundapp.QuietUninstallString -replace '"',''
+                                    $UninstallString = $UninstallString -replace '_\?=.*$'
                                  
-                                        $pattern = '^(.+?\.exe)\s*(.*)$'
-                                        $matches = [regex]::Match($uninstallstring, $pattern)
-                                        if ($matches.Success) {
-                                            $executable = $matches.Groups[1].Value
-                                            $arguments = $matches.Groups[2].Value
-                                            Start-Process -FilePath "$executable" -ArgumentList "$arguments"
-                                        }
-                                        else {
-                                            Write-Error "Invalid uninstall string format."
-                                        }
-
-                                    
-                                        Write-Host -ForegroundColor Green "STATUS: $($FoundApp.DisplayName) uninstalled successfully!"
-
-                                        break
+                                    $pattern = '^(.+?\.exe)\s*(.*)$'
+                                    $matches = [regex]::Match($uninstallstring, $pattern)
+                                    if ($matches.Success) {
+                                        $executable = $matches.Groups[1].Value
+                                        $arguments = $matches.Groups[2].Value
+                                        Start-Process -FilePath "$executable" -ArgumentList "$arguments"
+                                    } else {
+                                        Write-Error "Invalid uninstall string format."
                                     }
 
-                                    else {
-                                        Write-Verbose "[INFO] $($FoundApp.DisplayName) does not have a silent uninstall string"
-                                        Write-Verbose "[INFO] Trying to force silent mode on $($FoundApp.DisplayName)"
-                                        $UninstallString = $FoundApp.UninstallString -replace '"', ''
                                     
-                                        $UninstallString = $UninstallString -replace '_\?=.*$'
+                                    Write-Host -ForegroundColor Green "STATUS: $($FoundApp.DisplayName) uninstalled successfully!"
+
+                                    break
+                                }
+
+                                else {
+                                    Write-Verbose "[INFO] $($FoundApp.DisplayName) does not have a silent uninstall string"
+                                    Write-Verbose "[INFO] Trying to force silent mode on $($FoundApp.DisplayName)"
+                                    $UninstallString = $FoundApp.UninstallString -replace '"',''
+                                    
+                                    $UninstallString = $UninstallString -replace '_\?=.*$'
 
                                         $pattern = '^(.+?\.exe)\s*(.*)$'
                                         $matches = [regex]::Match($uninstallstring, $pattern)
@@ -163,45 +161,55 @@ Function Uninstall-Application {
                                             if ($arguments) {
                                                 if ([string]$arguments -notmatch '--\w+') {
                                                     Start-Process -FilePath "$executable" -ArgumentList "$arguments /SILENT /quiet /S"
-                                                }
-                                                else {
+                                                } else {
                                                     $pattern = '^(.+?\.exe)\s*(.*)$'
                                                     $matches = [regex]::Match($uninstallstring, $pattern)
                                                     if ($matches.Success) {
                                                         $executable = $matches.Groups[1].Value
                                                         $arguments = $matches.Groups[2].Value
                                                         Start-Process -FilePath "$executable" -ArgumentList "$arguments --verbose-logging --force-uninstall"
-                                                    }
-                                                    else {
+                                                    } else {
                                                         Write-Error "Invalid uninstall string format."
                                                     }
                                                 }
-                                            }
-                                            else {
-                                                Start-Process -FilePath $UninstallString -ArgumentList "/SILENT /quiet /S"
+                                           } else {
+                                            Start-Process -FilePath $UninstallString -ArgumentList "/SILENT /quiet /S"
                                             }                                        
-                                        }
-                                        else {
+                                        } else {
                                             Write-Error "Invalid uninstall string format."
                                         }
                                         
                                    
-                                        Write-Host -ForegroundColor Green "STATUS: $($FoundApp.DisplayName) uninstalled successfully!"
+                                    Write-Host -ForegroundColor Green "STATUS: $($FoundApp.DisplayName) uninstalled successfully!"
 
-                                        break
-                                    }
-                                }
-
-                                $false {
-                                    Write-Verbose "[INFO] Uninstalling $($FoundApp.DisplayName) in normal mode"
-                                    $UninstallString = $FoundApp.UninstallString -replace '"', ''
-                                    $UninstallString = $UninstallString -replace '_\?=.*$'
-
-                                
-                                    Start-Process -FilePath $UninstallString
                                     break
                                 }
                             }
+
+                            $false {
+                                Write-Verbose "[INFO] Uninstalling $($FoundApp.DisplayName) in normal mode"
+                                $UninstallString = $FoundApp.UninstallString -replace '"',''
+                                $UninstallString = $UninstallString -replace '_\?=.*$'
+
+                                $pattern = '^(.+?\.exe)\s*(.*)$'
+                                $matches = [regex]::Match($uninstallstring, $pattern)
+                                if ($matches.Success) {
+                                    $executable = $matches.Groups[1].Value
+                                    $arguments = $matches.Groups[2].Value
+                                    if ($arguments) {
+                                         Start-Process -FilePath "$executable" -ArgumentList "$arguments"
+                                    } else {
+                                         Start-Process -FilePath $UninstallString
+                                    }
+                                   
+                                } else {
+                                    Write-Error "Invalid uninstall string format."
+                                }
+
+                               
+                                break
+                            }
+                        }
                         }
 
 
@@ -209,7 +217,7 @@ Function Uninstall-Application {
 
 
                     }
-                }
+               }
             }
             else {
                 Write-Warning "[INFO] $AppName is not found in registry. Please try a different app name!"
