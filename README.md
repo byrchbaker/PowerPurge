@@ -18,13 +18,6 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][https://github.com/byrchbaker/PowerPurge/forks]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][https://github.com/byrchbaker/PowerPurge/blob/main/LICENSE]
-
-
 
 <!-- PROJECT LOGO -->
 <br />
@@ -36,7 +29,7 @@
 <h3 align="center">PowerPurge</h3>
 
   <p align="center">
-    Uninstall Apps Quickly or Automagically With This Powershell Module.
+    Uninstall ANY program with this Powershell module silently or manually! PowerPurge! ⚡
     <br />
     <a href="https://github.com/byrchbaker/PowerPurge"><strong>Explore the docs »</strong></a>
     <br />
