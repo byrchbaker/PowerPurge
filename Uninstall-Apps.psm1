@@ -11,8 +11,6 @@ Function Uninstall-Application {
         [string[]]$AppName,
         [Parameter(Mandatory=$False)]
         [switch]$Silent,
-        [Parameter(Mandatory = $false)]
-        [switch]$CheckDownloads,
         [Parameter(Mandatory=$False)]
         [string]$LogLocation
         
