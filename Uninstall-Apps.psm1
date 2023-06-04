@@ -37,8 +37,7 @@ Function Uninstall-Application {
 
         Write-Verbose "[BEGIN] Running program"
         Write-Verbose "[INFO] Log Date: $(Get-Date)"
-
-
+        
         Function Start-MSIUninstall {
 
             Param (
@@ -76,16 +75,12 @@ Function Uninstall-Application {
 
         }
 
-        # Function to find appname in registry uninstall paths and uninstall it if found
-
         Function Start-RegistryUninstall {
 
             Param (
                 $AppName,
                 $LogLocation
             )
-            
-            
 
             Write-Verbose "[INFO] Trying to find '$AppName' in registry."
             
@@ -176,7 +171,6 @@ Function Uninstall-Application {
                                         } else {
                                             Write-Error "Invalid uninstall string format."
                                         }
-                                        
                                    
                                     Write-Host -ForegroundColor Green "STATUS: $($FoundApp.DisplayName) uninstalled successfully!"
 
@@ -209,11 +203,6 @@ Function Uninstall-Application {
                             }
                         }
                         }
-
-
-                        
-
-
                     }
                }
             }
