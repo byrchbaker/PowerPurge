@@ -122,8 +122,6 @@ To get a local copy up and running follow these simple example steps.
 <!-- ROADMAP -->
 ## Roadmap
 
-[Roadmap In Notion](https://therapeutic-cactus-e65.notion.site/PowerPurge-3445686ddbb442e488c041ac88f7a157)
-
 [Open Issues In The Repository](https://github.com/byrchbaker/PowerPurge/issues)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -149,8 +147,6 @@ Project Link: [https://github.com/byrchbaker/PowerPurge](https://github.com/byrc
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
-
-* [LT (Loveparteek Tiwana)]()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
